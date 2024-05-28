@@ -3,18 +3,14 @@ import shutil
 from functools import partial
 from typing import Any, Dict, Optional, List, Tuple
 
-import albumentations as A
 import numpy as np
 import pandas as pd
 import torch
-from albumentations.pytorch import ToTensorV2
 from lightning import LightningDataModule
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS
-from monai.engines import default_prepare_batch
 from torch.utils.data import DataLoader, Dataset, default_collate
 from tqdm import tqdm
 
-from src.data.components.heart_dataset import HeartDataset
 from src.data.components.transform_config import get_anatomy_transform_config, get_tumor_transform_config, \
     get_both_transform_config
 from src.data.components.transforms import get_train_transforms, get_val_transforms, get_test_transforms
@@ -173,7 +169,6 @@ class Prostate158DataModule(LightningDataModule):
             os.makedirs(cache_dir, exist_ok=True)
             MonaiDataset = partial(PersistentDataset, cache_dir=cache_dir)
         elif dataset_type == 'cache':
-            from monai.data import CacheDataset
             raise NotImplementedError('CacheDataset not yet implemented')
         else:
             from monai.data import Dataset as MonaiDataset

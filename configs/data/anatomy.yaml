@@ -1,0 +1,23 @@
+_target_: src.data.prostate158_datamodule.Prostate158DataModule
+data_dir: ${paths.data_dir}
+train_csv: prostate158/train.csv
+valid_csv: prostate158/valid.csv
+test_csv: prostate158/test.csv
+samples_root_dir: prostate158
+anatomy_image_cols:
+  - t2
+anatomy_label_cols:
+  - t2_anatomy_reader1
+tumor_image_cols:
+  - t2
+  - adc
+  - dwi
+tumor_label_cols:
+  - adc_tumor_reader1
+dataset_type: persistent
+dataset_mode: anatomy  # "anatomy", "tumor", "both"
+cache_dir: /tmp/monai-cache
+use_val_for_test: true
+batch_size: 2 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+num_workers: 0
+pin_memory: False
