@@ -1,0 +1,25 @@
+_target_: src.models.heart_module.HeartLitModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.001
+  weight_decay: 0.01
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  _partial_: true
+  mode: min
+  factor: 0.1
+  patience: 10
+
+net:
+  _target_: src.models.components.unet.UNet
+  depth: 4
+  img_channels: 1
+  initial_feature_channels: 8
+  output_channels: 1
+  conv_padding: 1
+
+# compile model for faster training with pytorch 2.0
+compile: false

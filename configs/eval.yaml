@@ -1,0 +1,18 @@
+# @package _global_
+
+defaults:
+  - _self_
+  - data: heart # choose datamodule with `test_dataloader()` for evaluation
+  - model: heart_8
+  - logger: null
+  - trainer: default
+  - paths: default
+  - extras: default
+  - hydra: default
+
+task_name: "eval"
+
+tags: ["dev"]
+
+# passing checkpoint path is necessary for evaluation
+ckpt_path: /home/gsoykan/Desktop/ku/spring24_comp548_medical_imaging/hw3/unet_segmentation/logs/train/runs/2024-05-23_23-53-46/checkpoints/epoch_071.ckpt
