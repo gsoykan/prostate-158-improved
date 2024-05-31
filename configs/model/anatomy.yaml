@@ -1,0 +1,17 @@
+_target_: src.models.prostate158_module.Prostate158LitModule
+
+optimizer: null
+
+scheduler: null
+
+ndim: 3
+prostate_mode: anatomy  # "anatomy", "tumor", "both"
+channels: [16, 32, 64, 128, 256, 512]
+strides: [2, 2, 2, 2, 2]
+num_res_units: 4
+act: PRELU
+norm: BATCH
+dropout: 0.15
+
+# compile model for faster training with pytorch 2.0
+compile: false

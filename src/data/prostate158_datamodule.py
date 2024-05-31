@@ -174,7 +174,12 @@ class Prostate158DataModule(LightningDataModule):
             from monai.data import Dataset as MonaiDataset
         return MonaiDataset
 
-    def monai_collate(self, batch: List[Any]) -> Tuple[Any, ...]:
+    def monai_collate(self,
+                      batch: List[Any],
+                      is_train: bool = False) -> Tuple[Any, ...]:
+        if not is_train:
+            return default_collate(batch)
+
         collateds = []
         for batch_instance in batch:
             collateds.append(default_collate(batch_instance))
@@ -192,13 +197,13 @@ class Prostate158DataModule(LightningDataModule):
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
             shuffle=True,
-            collate_fn=self.monai_collate
+            collate_fn=lambda x: self.monai_collate(x, is_train=True),
         )
 
     def val_dataloader(self) -> DataLoader[Any]:
         return DataLoader(
             dataset=self.data_val,
-            batch_size=self.batch_size_per_device,
+            batch_size=1,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
             shuffle=False,
@@ -208,7 +213,7 @@ class Prostate158DataModule(LightningDataModule):
     def test_dataloader(self) -> DataLoader[Any]:
         return DataLoader(
             dataset=self.data_test,
-            batch_size=self.batch_size_per_device,
+            batch_size=1,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
             shuffle=False,
@@ -218,7 +223,7 @@ class Prostate158DataModule(LightningDataModule):
     def predict_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             dataset=self.data_predict,
-            batch_size=self.batch_size_per_device,
+            batch_size=1,
             num_workers=self.hparams.num_workers,
             pin_memory=self.hparams.pin_memory,
             shuffle=False,

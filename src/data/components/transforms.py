@@ -346,23 +346,47 @@ def get_test_transforms(config: Config):
     return Compose(tfms)
 
 
-def get_val_post_transforms(config: Config):
-    tfms = [EnsureTyped(keys=[CommonKeys.PRED, CommonKeys.LABEL]),
+def get_val_post_transforms(out_channels: int):
+    tfms = [EnsureTyped(keys=[CommonKeys.PRED,
+                              CommonKeys.LABEL]),
             AsDiscreted(
                 keys=CommonKeys.PRED,
                 argmax=True,
-                to_onehot=config.model.out_channels,
-                num_classes=config.model.out_channels,
+                to_onehot=out_channels,
+                num_classes=out_channels,
             ),
             AsDiscreted(
                 keys=CommonKeys.LABEL,
-                to_onehot=config.model.out_channels,
-                num_classes=config.model.out_channels
+                to_onehot=out_channels,
+                num_classes=out_channels
             ),
             KeepLargestConnectedComponentd(
                 keys=CommonKeys.PRED,
-                applied_labels=list(range(1, config.model.out_channels))
+                applied_labels=list(range(1, out_channels))
             ),
             ]
-    # TransformBackends
+    return Compose(tfms)
+
+
+def get_pre_metric_transforms_pred(out_channels: int):
+    tfms = [AsDiscreted(
+        keys=CommonKeys.PRED,
+        argmax=True,
+        to_onehot=out_channels,
+        num_classes=out_channels,
+    ),
+        KeepLargestConnectedComponentd(
+            keys=CommonKeys.PRED,
+            applied_labels=list(range(1, out_channels))
+        ),
+    ]
+    return Compose(tfms)
+
+
+def get_pre_metric_transforms_label(out_channels: int):
+    tfms = [AsDiscreted(
+        keys=CommonKeys.LABEL,
+        to_onehot=out_channels,
+        num_classes=out_channels
+    ), ]
     return Compose(tfms)

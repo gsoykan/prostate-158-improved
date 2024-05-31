@@ -1,0 +1,11 @@
+defaults:
+  - default.yaml
+
+watch_model:
+  _target_: src.callbacks.wandb_callbacks.WatchModel
+  log: "all"
+  log_freq: 5
+
+lr_logger:
+  _target_: lightning.pytorch.callbacks.LearningRateMonitor
+  logging_interval: step
