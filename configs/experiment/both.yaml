@@ -1,0 +1,93 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: tumor
+  - override /model: tumor
+  - override /callbacks: wandb # default
+  - override /trainer: gpu
+  - override /logger: wandb # wandb # csv
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: [ "prostate158", "ku" ]
+
+seed: 12345
+
+trainer:
+  min_epochs: 1
+  max_epochs: 1
+  gradient_clip_val: 0.5
+  precision: 16
+  log_every_n_steps: 5
+
+model:
+  optimizer: null # fallback Novograd
+  #  optimizer:
+  #    _target_: torch.optim.AdamW
+  #    _partial_: true
+  #    lr: 0.001
+  #    weight_decay: 0.01
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.OneCycleLR
+    _partial_: true
+    max_lr: 0.001
+    steps_per_epoch: 120
+    epochs: 1 # adjust accordingly
+
+  ndim: 3
+  prostate_mode: both  # "anatomy", "tumor", "both"
+  channels: [ 16, 32, 64, 128, 256, 512 ]
+  strides: [ 2, 2, 2, 2, 2 ]
+  num_res_units: 4
+  act: PRELU
+  norm: BATCH
+  dropout: 0.15
+
+  # compile model for faster training with pytorch 2.0
+  compile: false
+
+
+data:
+  data_dir: ${paths.data_dir}
+  train_csv: prostate158/train.csv
+  valid_csv: prostate158/valid.csv
+  test_csv: prostate158/test.csv
+  samples_root_dir: prostate158
+  anatomy_image_cols:
+    - t2
+  anatomy_label_cols:
+    - t2_anatomy_reader1
+  tumor_image_cols:
+    - t2
+    - adc
+    - dwi
+  tumor_label_cols:
+    - adc_tumor_reader1
+  dataset_type: persistent
+  dataset_mode: both  # "anatomy", "tumor", "both"
+  cache_dir: /tmp/monai-cache
+  use_val_for_test: true
+  batch_size: 1 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+  num_workers: 10
+  pin_memory: False
+
+callbacks:
+  early_stopping:
+    monitor: "val/loss"
+    patience: 1
+    mode: "min"
+
+  model_checkpoint:
+    monitor: "val/loss"
+
+logger:
+  wandb:
+    tags: ${tags}
+    group: "ku-hw"
+  aim:
+    experiment: "prostate158_both"

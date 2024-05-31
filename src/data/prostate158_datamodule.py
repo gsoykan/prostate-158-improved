@@ -178,11 +178,21 @@ class Prostate158DataModule(LightningDataModule):
                       batch: List[Any],
                       is_train: bool = False) -> Tuple[Any, ...]:
         if not is_train:
-            return default_collate(batch)
+            collated = default_collate(batch)
+            if self.hparams.dataset_mode == "both":
+                collated['label'][:, 0][collated['label'][:, 1] == 1] = 3
+                collated['label'] = collated['label'][:, 0].unsqueeze(1)
+            return collated
 
         collateds = []
         for batch_instance in batch:
-            collateds.append(default_collate(batch_instance))
+            if self.hparams.dataset_mode == "both":
+                collated = default_collate(batch_instance)
+                collated['label'][:, 0][collated['label'][:, 1] == 1] = 3
+                collated['label'] = collated['label'][:, 0].unsqueeze(1)
+                collateds.append(collated)
+            else:
+                collateds.append(default_collate(batch_instance))
         result = {}
         for k in collateds[0].keys():
             result[k] = torch.cat(list(map(lambda x: x[k], collateds)), dim=0)
@@ -262,6 +272,6 @@ if __name__ == "__main__":
         batch_size=2,
         dataset_mode="both")
     datamodule.setup()
-    dataloader = datamodule.train_dataloader()
+    dataloader = datamodule.val_dataloader()
     for batch in tqdm(dataloader):
         print(batch)
