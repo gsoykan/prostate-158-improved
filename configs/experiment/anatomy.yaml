@@ -19,7 +19,7 @@ seed: 12345
 
 trainer:
   min_epochs: 1
-  max_epochs: 1
+  max_epochs: 50
   gradient_clip_val: 0.5
   precision: 16
   log_every_n_steps: 5
@@ -36,8 +36,8 @@ model:
     _target_: torch.optim.lr_scheduler.OneCycleLR
     _partial_: true
     max_lr: 0.001
-    steps_per_epoch: 60
-    epochs: 1 # adjust accordingly
+    steps_per_epoch: 30
+    epochs: 50 # adjust accordingly
 
   ndim: 3
   prostate_mode: anatomy  # "anatomy", "tumor", "both"
@@ -72,14 +72,14 @@ data:
   dataset_mode: anatomy  # "anatomy", "tumor", "both"
   cache_dir: /tmp/monai-cache
   use_val_for_test: true
-  batch_size: 2 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+  batch_size: 4 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
   num_workers: 10
   pin_memory: False
 
 callbacks:
   early_stopping:
     monitor: "val/loss"
-    patience: 1
+    patience: 5
     mode: "min"
 
   model_checkpoint:
