@@ -15,7 +15,7 @@ scheduler:
   epochs: 50 # adjust accordingly
 
 ndim: 3
-prostate_mode: anatomy  # "anatomy", "tumor", "both"
+prostate_mode: both  # "anatomy", "tumor", "both"
 channels: [ 16, 32, 64, 128, 256, 512 ]
 strides: [ 2, 2, 2, 2, 2 ]
 num_res_units: 4

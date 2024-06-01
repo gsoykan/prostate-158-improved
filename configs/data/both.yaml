@@ -15,7 +15,7 @@ tumor_image_cols:
 tumor_label_cols:
   - adc_tumor_reader1
 dataset_type: persistent
-dataset_mode: anatomy  # "anatomy", "tumor", "both"
+dataset_mode: both  # "anatomy", "tumor", "both"
 cache_dir: /tmp/monai-cache
 use_val_for_test: true
 batch_size: 4 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)

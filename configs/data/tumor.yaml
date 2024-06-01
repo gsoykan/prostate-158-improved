@@ -18,6 +18,6 @@ dataset_type: persistent
 dataset_mode: tumor  # "anatomy", "tumor", "both"
 cache_dir: /tmp/monai-cache
 use_val_for_test: true
-batch_size: 2 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
-num_workers: 0
+batch_size: 4 # Needs to be divisible by the number of devices (e.g., if in a distributed setup)
+num_workers: 10
 pin_memory: False
